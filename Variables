@@ -1,1 +1,4 @@
-
+Grid.h:
+  Position.token ( Visual member variable of struct Position. Might change into the ammount of current visitors. )
+  Position.weight ( A random integer value. If the value is lesser than 20, it is a building and the GPS signal will malfunction. )
+  Position.isInfected ( A boolean that is initialized as false for each node of the grid. It becomes true if any infected human gets at the node. )
