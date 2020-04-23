@@ -17,14 +17,10 @@ public:
 
     typedef struct {
         char token;
-        int  weight; // Για κάθε κόμβο του grid υπάρχει 20% πιθανότητα να είναι ψηλό κτήριο
-        bool isInfected; // True αν πριν από ορισμένο διάστημα υπήρξε κάποιος ασθενής στην περιοχή
+        int  weight;
+        bool isInfected;
     } Position;
 
-    /* Δημιουργούμε ένα grid με διαστάσεις 100x100
-        και αρχικοποιούμε τη μεταβλητή weight του στοιχείου με τυχαίο αριθμό στο διάστημα [0, 99]
-        καθώς και την boolean μεταβλητή isInfected που στην αρχή έχει την τιμή False
-    */
     void initialize_grid(Position grid[][COLS]) {
         for (int r = 0; r < ROWS; r++)
             for (int c = 0; c < COLS; c++) {
@@ -34,9 +30,6 @@ public:
             }
     };
 
-    /* Εκτυπώνουμε το grid
-        Κάθε κόμβος χρωματίζεται αναλόγως το ύψος και την ύπαρξη ασχθενούς ατόμου
-    */
     void print_grid(Position grid[][COLS]) {
         for (int r = 0; r < ROWS; r++) {
             for (int c = 0; c < COLS; c++) {
