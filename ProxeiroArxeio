@@ -1,0 +1,183 @@
+//Random Waypoint Model
+#include <iostream>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <ctime>
+
+using namespace std;
+
+template<class T>
+class ChainNode;
+template<class T>
+class Chain{
+	public:
+		Chain() {first = 0;} //creates chain
+		~Chain(){ //destroys chain
+			ChainNode<T> *next;
+			
+			while (first) { //deletes node and then proceeds to delete the next one etc.
+				next = first->link;
+				delete first;
+				first = next;
+			}
+		}
+		
+		bool IsEmpty() const { //checks if chain is empty (true if it is, false if it has at least one node)
+			return first == 0;
+		}
+		
+		int Length() const{ //returns the length of the chain
+			ChainNode<T> *currentNode = first;
+			int chainLength = 0;
+			while (currentNode){ //for every transition to the next node, the chainLength is augmented by 1
+				chainLength++;
+				currentNode = currentNode->link;
+			}
+			return chainLength;
+		}
+		
+		bool Find(int f, T& x) const{ //Finds a specific node (the one with index=f)
+			if (f < 1) return false; //There can't be a chain with nodes<=0
+			ChainNode<T> *currentNode = first;
+			int counter = 1;
+			while (counter < f && currentNode) { //We iterate through the list until we find the node with index=f
+				currentNode = currentNode->link;
+				counter++;
+			}
+			if (currentNode) { //if the node is found, it is currently held by currentNode and we get its data
+				x = currentNode->data;
+				return true;
+			}
+			return false; //the node with index=f was not found
+		}
+		
+		int Search(const T& x) const{ //search for a node (x)
+			ChainNode<T> *currentNode = first;
+			int counter = 1;
+			while (currentNode && currentNode->data != x) { //runs when currentNode is not x
+				currentNode = currentNode->link;
+				counter++;
+			}
+			if (currentNode){ //if it is found, return its index
+				return counter;
+			}
+			return 0;
+		}
+		
+		Chain<T>& Delete(int k, T& x){
+			if (k < 1 || !first){ //if the node index (k) is incorrect (k<=0) or the first pointer is null
+				cout << "ERROR: Out of Bounds Exception.."; //The exception could not be thrown
+			}
+			ChainNode<T> *p = first;
+			if (k == 1){ //if we want to delete the first node, we make the second node the Head node
+				first = first->link;
+			}
+			else { //We make all the adjustments (linking the correct nodes) and then delete the node we want
+				ChainNode<T> *q = first;
+				for (int i = 1; i < k - 1 && q; i++)
+				q = q->link;
+				p = q->link;
+				q->link = p->link;
+			}
+			x = p->data;
+			delete p;
+			return *this;
+		}
+		
+		Chain<T>& Insert(int k, const T& x){ //Insert Node
+			ChainNode<T> *p = first;
+			for (int i = 1; i < k && p; i++){
+				p = p->link;
+			}	
+			ChainNode<T> *y = new ChainNode<T>; //creation of Node Pointer
+			y->data = x; //Assign data to the new Node (data = x)
+			if (k) { //in this case p's link is assigned to y's link and then p gets linked with y
+				y->link = p->link;
+				p->link = y;
+			}
+			else { //in this case y's link gets the value of the first node's position (so that y is linked to the first node) and then y becomes the first node
+				y->link = first;
+				first = y;
+			}
+			return *this;
+		}
+		
+		void Output(){ //Outputs the whole chain in the following format: node1-node2-etc
+			ChainNode<T> *tmp;
+			tmp=first;
+			while(tmp){ //when it reaches the end, tmp becomes null. Else, if the chain is empty, it doesn't print anything
+				cout << tmp->data <<"-";
+				tmp = tmp->link;
+			}
+			cout<<endl;
+		}
+	private:
+		ChainNode<T> *first;
+};
+
+template<class T>
+class ChainNode {
+	public:
+		friend Chain<T>;
+	private:
+		T data;
+		ChainNode<T> *link;
+};
+
+
+class Human {
+public:
+	int healthy;
+    int destinationX;
+    int destinationY;
+    int currentX;
+    int currentY;
+    float speed;
+    
+    Human(int x, int y, int health){
+		currentX = x;
+		currentY = y;
+		healthy = health;
+	}
+
+    void details(){
+        destinationX = findDestinationX();
+        destinationY = findDestinationY();
+        while(destinationX == 0 && destinationY == 0){
+            destinationX = findDestinationX();
+            destinationY = findDestinationY();
+        }
+        speed = humanSpeed();
+    }
+
+    int findDestinationX(){
+        int destinationX = rand()%60;
+        return destinationX;
+    }
+
+    int findDestinationY(){
+        int destinationY = rand()%60;
+        return destinationY;
+    }
+
+    float humanSpeed(){
+        float speed = (static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 3))) + 3;
+        return speed;
+    }
+};
+
+int main(){
+	srand ( time(NULL) );
+	int startingX = rand()%60;
+	int startingY = rand()%60;
+	Human h1(startingX,startingY,1); //1 if healthy, 0 if ill
+	int n=1;
+	for(int secondsElapsed=0; secondsElapsed<86400; secondsElapsed+=30){
+		h1.details();
+		
+		cout << n << ". Speed to destination: " << h1.speed << "km/h" << " || " << "(X,Y)=(" << h1.destinationX <<","<< h1.destinationY << ")" << endl;
+		n++;
+	}
+	return 0;
+}
