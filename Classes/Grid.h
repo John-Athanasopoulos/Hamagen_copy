@@ -4,8 +4,8 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define ROWS 100
-#define COLS 100
+#define ROWS 60
+#define COLS 60
 #define RED "\033[31m"
 #define YELLOW "\033[33m"
 #define WHITE "\033[m"
