@@ -12,7 +12,7 @@ class ChainNode;
 template<class T>
 class Chain{
 public:
-    Chain() {first = nullptr;} //creates chain
+    Chain() {first = 0;} //creates chain
     ~Chain(){ //destroys chain
         ChainNode<T> *next;
 
@@ -90,7 +90,8 @@ public:
     }
 
     Chain<T>& FirstNodeCreation(int currX, int currY, int healthy){ //Creation of the First Node of the Chain
-        auto *y = new ChainNode<T>(currX,currY,healthy); //creation of Node Pointer
+        ChainNode<T> *y = new ChainNode<T>(currX,currY,healthy); //creation of Node Pointer
+        y->ChainNode<T>::setNode();
         y->data[0] = currX;
         y->data[1] = currY;
         y->data[2] = healthy;
@@ -105,7 +106,7 @@ public:
         int currX = p->destinationX;
         int currY = p->destinationY;
         int healthy = p->healthy;
-        auto *d = new ChainNode<T>(currX,currY,healthy); //creation of Node Pointer
+        ChainNode<T> *d = new ChainNode<T>(currX,currY,healthy); //creation of Node Pointer
         d->data[0]=currX;
         d->data[1]=currY;//Assign data to the new Node (data = x)
         d->data[2]=healthy;
@@ -152,12 +153,12 @@ public:
     }
 
     int findDestinationX(){
-        int destinationX = rand()%60;
+        int destinationX = rand()%61;
         return destinationX;
     }
 
     int findDestinationY(){
-        int destinationY = rand()%60;
+        int destinationY = rand()%61;
         return destinationY;
     }
 
@@ -166,15 +167,16 @@ public:
         return speed;
     }
 
-    T setNode(){
+    void setNode(){
         int currX = this->currentX;
         int currY = this->currentY;
         int healthy = this->healthy;
-        this->data = {currX, currY, healthy};
-        return data;
+        this->data[0] = currX;
+        this->data[1] = currY;
+        this->data[2] = healthy;    
     }
 
-    T data[3];
+    int data[3];
 
 private:
     ChainNode<T> *link;
@@ -184,16 +186,17 @@ private:
 
 
 int main(){
-    srand ( time(nullptr) );
+    srand ( time(0) );
+    int displayX;
+    int displayY;
+    int displayHealth;
     int startingX = rand()%61;
     int startingY = rand()%61;
     Chain<int> h1;
     h1.FirstNodeCreation(startingX, startingY,1);
-    h1.Insert(1);
-    int n=0;
-    int displayX;
-    int displayY;
-    int displayHealth;
+    h1.Output();
+    
+
     h1.Details(1,displayX,displayY,displayHealth);
     return 0;
 }
