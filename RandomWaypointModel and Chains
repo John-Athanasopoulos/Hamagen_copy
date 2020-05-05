@@ -24,7 +24,7 @@ public:
     }
 
     bool IsEmpty() const //checks if chain is empty (true if it is, false if it has at least one node)
-    { 
+    {
         return first == 0;
     }
 
@@ -39,7 +39,7 @@ public:
     }
 
     bool Details(int f, T& x, T& y, T& h) const //Finds a specific node (the one with index=f)
-    { 
+    {
         if (f < 1) return false; //There can't be a chain with nodes<=0
         ChainNode<T>* currentNode = first;
         int counter = 1;
@@ -59,7 +59,7 @@ public:
     }
 
     int Search(const T& x) const //search for a node (x)
-    { 
+    {
         ChainNode<T>* currentNode = first;
         int counter = 1;
         while (currentNode && currentNode->data != x) { //runs when currentNode is not x
@@ -72,7 +72,7 @@ public:
         return 0;
     }
 
-    Chain<T>& Delete(int k, T& x) 
+    Chain<T>& Delete(int k)
     {
         if (k < 1 || !first) { //if the node index (k) is incorrect (k<=0) or the first pointer is null
             cout << "ERROR: Out of Bounds Exception.."; //The exception could not be thrown
@@ -88,13 +88,12 @@ public:
             p = q->link;
             q->link = p->link;
         }
-        x = p->data;
         delete p;
         return *this;
     }
 
     Chain<T>& FirstNodeCreation(int currX, int currY, int healthy) //Creation of the First Node of the Chain
-    { 
+    {
         ChainNode<T>* y = new ChainNode<T>(currX, currY, healthy); //creation of Node Pointer
         y->ChainNode<T>::setNode();
         y->data[0] = currX;
@@ -105,7 +104,7 @@ public:
     }
 
     Chain<T>& Insert(int k) //Insert Node
-    { 
+    {
         ChainNode<T>* p = first;
         if (p->link)
             for (int i = 1; i < k && p; i++) {
@@ -146,39 +145,39 @@ class ChainNode {
 public:
     friend Chain<T>;
 
-    int healthy; // 1 f healthy, 0 if ill
+    int healthy; // 1 if healthy, 0 if ill
     int destinationX; // destination on the X axis
     int destinationY; // destination on the Y axis
     int currentX; // the current value on the X axis
     int currentY; // the current value on the Y axis
     float speed; // The speed the human will go to the destination
 
-    ChainNode(int x, int y, int health) 
+    ChainNode(int x, int y, int health)
     {
         currentX = x;
         currentY = y;
         healthy = health;
     }
 
-    int findDestinationX() 
+    int findDestinationX()
     {
         int destinationX = rand() % 61;
         return destinationX;
     }
 
-    int findDestinationY() 
+    int findDestinationY()
     {
         int destinationY = rand() % 61;
         return destinationY;
     }
 
-    float humanSpeed() 
+    float humanSpeed()
     {
         float speed = (static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 3))) + 3;
         return speed;
     }
 
-    void setNode() 
+    void setNode()
     {
         int currX = this->currentX;
         int currY = this->currentY;
@@ -194,7 +193,7 @@ private:
     ChainNode<T>* link;
 };
 
-int main() 
+int main()
 {
     srand(time(0));
     int displayX;
@@ -204,8 +203,11 @@ int main()
     int startingY = rand() % 61;
     Chain<int> h1;
     h1.FirstNodeCreation(startingX, startingY, 1);
-    h1.Insert(10);
+    h1.Output();
+    h1.Insert(20);
+    //h1.Delete(1); Deletes first node
     h1.Output();
     //h1.Details(1, displayX, displayY, displayHealth);
     return 0;
 }
+
