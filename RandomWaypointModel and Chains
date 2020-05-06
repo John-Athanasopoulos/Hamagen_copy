@@ -52,7 +52,8 @@ public:
             int y = currentNode->data[1];
             int h = currentNode->data[2];
             int d = currentNode->data[3];
-            cout << "Day: " << d << "||" << "X-axis: " << x << "||" << "Y-axis: " << y << "||" << "Health: " << h << endl;
+            int s = currentNode->data[4];
+            cout << "Day: " << d << "||" << "X-axis: " << x << "||" << "Y-axis: " << y << "||" << "Health: " << h << "||" << "Seconds: " << s << endl;
 
             return true;
         }
@@ -87,6 +88,7 @@ public:
         y->data[1] = currY;
         y->data[2] = healthy;
         y->data[3] = 1; //first Node of every chain is created on the first day of the simulation
+        y->data[4] = 30;
         first = y;
         return *this;
     }
@@ -108,6 +110,7 @@ public:
             y->data[1] = currY;
             y->data[2] = healthy;
             y->data[3] = day;
+            y->data[4] = p->data[4] + 30; //This node's seconds are equal to the former one's + 30
             p->link = y;
             p = p->link;
         }
@@ -117,25 +120,38 @@ public:
 
     Chain<T>& InsertBetween(int k, int x, int y, int h)
     {
-        ChainNode<T>* p = first;
-        int daySim;
-        if (p->link && p)
-            for (int index = 1; index < k - 1; index++) {
+        if (k != 1) {
+            ChainNode<T>* p = first;
+            int daySim = p->data[3];
+            if (p->link && p)
+                for (int index = 1; index < k - 1; index++) {
+                    p = p->link;
+                    daySim = p->data[3];
+                }
+            ChainNode<T>* nextLink = p->link;
+
+            ChainNode<T>* z = new ChainNode<T>(x, y, h, daySim); //creation of Node Pointer
+            z->ChainNode<T>::setNode();
+            z->data[0] = x;
+            z->data[1] = y;
+            z->data[2] = h;
+            z->data[3] = daySim;
+            z->data[4] = p->data[4] + 30;
+            p->link = z;
+            z->link = nextLink;
+            p = p->link;
+
+            while (p->link) {
+                int sec = p->data[4];
                 p = p->link;
-                daySim = p->data[3];
+                p->data[4] = sec + 30;
             }
-        ChainNode<T>* nextLink = p->link;
 
-        ChainNode<T>* z = new ChainNode<T>(x, y, h); //creation of Node Pointer
-        z->ChainNode<T>::setNode();
-        z->data[0] = x;
-        z->data[1] = y;
-        z->data[2] = h;
-        z->data[3] = daySim;
-        p->link = z;
-        z->link = nextLink;
-
-        return *this;
+            return *this;
+        }
+        else {
+            cout << "Error: InsertBetween() used for the first node.." << endl;
+        }
     }
 
     void Output()  //Outputs the whole chain in the following format: node1-node2-etc
@@ -143,11 +159,38 @@ public:
         ChainNode<T>* tmp;
         tmp = first;
         while (tmp) { //when it reaches the end, tmp becomes null. Else, if the chain is empty, it doesn't print anything
-            cout << " -> " << "{" << tmp->data[3] << "," << tmp->data[0] << ", " << tmp->data[1] << ", " << tmp->data[2] << "}";
+            cout << " -> " << "{" << tmp->data[3] << ", " << tmp->data[0] << ", " << tmp->data[1] << ", " << tmp->data[2] << ", " << tmp->data[4] << "}";
             tmp = tmp->link;
         }
         cout << endl;
     }
+
+
+    Chain<T>& REPAIR(int day, Chain<T> a)
+    {
+        ChainNode<T>* iter = first;
+        int sec1;
+        int sec2; // sec1 and sec2 are used for the calculation of a difference of more than 30 seconds, which indicates the loss of a node
+        int counter = 2; // counts the number of the node in the chain, in order to use InsertBetween()
+        while (iter->link) {
+            int currh = iter->data[2];
+            sec1 = iter->data[4];
+            iter = iter->link;
+            sec2 = iter->data[4];
+            if (sec2 - sec1 > 30) {
+                int cx = rand() % 61;
+                int cy = rand() % 61;
+                int ch = currh;
+                InsertBetween(counter, cx, cy, ch);
+            }
+            counter++;
+        }
+        
+        return *this;
+    }
+
+
+
 private:
     ChainNode<T>* first;
 };
@@ -163,7 +206,8 @@ public:
     int currentX; // the current value on the X axis
     int currentY; // the current value on the Y axis
     float speed; // The speed the human will go to the destination
-    int currentDay;
+    int currentDay; //The number of the current day
+    int seconds; //The number of seconds since the beginning of the day
 
     ChainNode(int x, int y, int health, int day)
     {
@@ -203,7 +247,7 @@ public:
         this->data[3] = day;
     }
 
-    int data[4];
+    int data[5];
 
 private:
     ChainNode<T>* link;
@@ -228,19 +272,21 @@ int main()
     int startingX = rand() % 61;
     int startingY = rand() % 61;
     int simulationDays;
-    cout << "Number of simulation days: ";
+    //cout << "Number of simulation days: ";
     //cin >> simulationDays;
     //MakeSimulationChain(startingX,startingY,1,simulationDays);
-    cout << endl;
+    //cout << endl;
     Chain<int> h1;
     h1.FirstNodeCreation(startingX, startingY, 1);
-    h1.Insert(2879, 1);
-    h1.Insert(2880, 2);
-    h1.Insert(2880, 3);
+    h1.Insert(99, 1);
+    h1.Delete(6);
+    h1.Delete(15);
+    h1.Delete(82);
+    h1.Delete(45);
+    h1.REPAIR(1, h1);
     //h1.InsertBetween(5, 0, 0, 0);
     //h1.Delete(1);// Deletes first node
     h1.Output();
     cout << endl;
-    h1.Details(4000);
     return 0;
 }
