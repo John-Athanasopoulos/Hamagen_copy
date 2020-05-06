@@ -126,6 +126,36 @@ public:
         return *this;
     }
 
+    Chain<T>& InsertBetween(int k, int x, int y, int h)
+    {
+        ChainNode<T>* u = first;
+        if (u->link && u) {
+            for (int index = 1; index < k-1; index++) {
+                u = u->link;
+            }
+        }
+        /*int currX = rand() % 61;
+        int currY = rand() % 61;
+        int healthy = rand() % 2;*/
+        bool l = true;
+        while (l) {
+            int currX = x;
+            int currY = y;
+            int healthy = h;
+            ChainNode<T>* t = new ChainNode<T>(currX, currY, healthy);
+            t->ChainNode<T>::setNode();
+            t->data[0] = currX;
+            t->data[1] = currY;
+            t->data[2] = healthy;
+            u->link = t;
+            t->link = u->link;
+            l = false;
+        }
+        
+        return *this;
+    }
+
+
     void Output()  //Outputs the whole chain in the following format: node1-node2-etc
     {
         ChainNode<T>* tmp;
@@ -204,10 +234,15 @@ int main()
     Chain<int> h1;
     h1.FirstNodeCreation(startingX, startingY, 1);
     h1.Output();
-    h1.Insert(20);
+    h1.Insert(100);
+    h1.Output();
+    cout << endl;
+    h1.InsertBetween(5, 0, 0, 0);
     //h1.Delete(1); Deletes first node
     h1.Output();
+    cout << endl;
+    //h1.Details(3, displayX, displayY, displayHealth);
+
     //h1.Details(1, displayX, displayY, displayHealth);
     return 0;
 }
-
