@@ -107,9 +107,9 @@ public:
     {
         ChainNode<T>* p = first;
         if (p->link)
-            for (int i = 1; i < k && p; i++) {
+            for (int i = 1; i < k && p; i++)
                 p = p->link;
-            }
+                
         while (k-- > 0) {
             int currX = rand() % 61;
             int currY = rand() % 61;
@@ -128,30 +128,28 @@ public:
 
     Chain<T>& InsertBetween(int k, int x, int y, int h)
     {
-        ChainNode<T>* u = first;
-        if (u->link && u) {
-            for (int index = 1; index < k-1; index++) {
-                u = u->link;
-            }
-        }
-        /*int currX = rand() % 61;
-        int currY = rand() % 61;
-        int healthy = rand() % 2;*/
+        ChainNode<T>* p = first;
+        if (p->link && p)
+            for (int index = 1; index < k - 1; index++)
+                p = p->link;
+
+        ChainNode<T>* nextLink = p->link;
+        
         bool l = true;
         while (l) {
             int currX = x;
             int currY = y;
             int healthy = h;
-            ChainNode<T>* t = new ChainNode<T>(currX, currY, healthy);
-            t->ChainNode<T>::setNode();
-            t->data[0] = currX;
-            t->data[1] = currY;
-            t->data[2] = healthy;
-            u->link = t;
-            t->link = u->link;
+            ChainNode<T>* z = new ChainNode<T>(currX, currY, healthy); //creation of Node Pointer
+            z->ChainNode<T>::setNode();
+            z->data[0] = currX;
+            z->data[1] = currY;
+            z->data[2] = healthy;
+            p->link = z;
+            z->link = nextLink;
             l = false;
         }
-        
+
         return *this;
     }
 
