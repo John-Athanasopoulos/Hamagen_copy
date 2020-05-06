@@ -135,14 +135,11 @@ public:
 
         ChainNode<T>* nextLink = p->link;
 
-        int currX = x;
-        int currY = y;
-        int healthy = h;
-        ChainNode<T>* z = new ChainNode<T>(currX, currY, healthy); //creation of Node Pointer
+        ChainNode<T>* z = new ChainNode<T>(x, y, h); //creation of Node Pointer
         z->ChainNode<T>::setNode();
-        z->data[0] = currX;
-        z->data[1] = currY;
-        z->data[2] = healthy;
+        z->data[0] = x;
+        z->data[1] = y;
+        z->data[2] = h;
         p->link = z;
         z->link = nextLink;
 
