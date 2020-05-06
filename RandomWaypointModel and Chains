@@ -134,21 +134,17 @@ public:
                 p = p->link;
 
         ChainNode<T>* nextLink = p->link;
-        
-        bool l = true;
-        while (l) {
-            int currX = x;
-            int currY = y;
-            int healthy = h;
-            ChainNode<T>* z = new ChainNode<T>(currX, currY, healthy); //creation of Node Pointer
-            z->ChainNode<T>::setNode();
-            z->data[0] = currX;
-            z->data[1] = currY;
-            z->data[2] = healthy;
-            p->link = z;
-            z->link = nextLink;
-            l = false;
-        }
+
+        int currX = x;
+        int currY = y;
+        int healthy = h;
+        ChainNode<T>* z = new ChainNode<T>(currX, currY, healthy); //creation of Node Pointer
+        z->ChainNode<T>::setNode();
+        z->data[0] = currX;
+        z->data[1] = currY;
+        z->data[2] = healthy;
+        p->link = z;
+        z->link = nextLink;
 
         return *this;
     }
