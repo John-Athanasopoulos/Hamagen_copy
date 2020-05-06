@@ -38,7 +38,7 @@ public:
         return chainLength;
     }
 
-    bool Details(int f, T& x, T& y, T& h) const //Finds a specific node (the one with index=f)
+    bool Details(int f) const //Finds a specific node (the one with index=f)
     {
         if (f < 1) return false; //There can't be a chain with nodes<=0
         ChainNode<T>* currentNode = first;
@@ -48,28 +48,15 @@ public:
             counter++;
         }
         if (currentNode) { //if the node is found, it is currently held by currentNode and we get its data
-            x = currentNode->data[0];
-            y = currentNode->data[1];
-            h = currentNode->data[2];
-            cout << "X-axis: " << x << "||" << "Y-axis: " << y << "||" << "Health: " << h << endl;
+            int x = currentNode->data[0];
+            int y = currentNode->data[1];
+            int h = currentNode->data[2];
+            int d = currentNode->data[3];
+            cout << "Day: " << d << "||" << "X-axis: " << x << "||" << "Y-axis: " << y << "||" << "Health: " << h << endl;
 
             return true;
         }
         return false; //the node with index=f was not found
-    }
-
-    int Search(const T& x) const //search for a node (x)
-    {
-        ChainNode<T>* currentNode = first;
-        int counter = 1;
-        while (currentNode && currentNode->data != x) { //runs when currentNode is not x
-            currentNode = currentNode->link;
-            counter++;
-        }
-        if (currentNode) { //if it is found, return its index
-            return counter;
-        }
-        return 0;
     }
 
     Chain<T>& Delete(int k)
@@ -94,31 +81,33 @@ public:
 
     Chain<T>& FirstNodeCreation(int currX, int currY, int healthy) //Creation of the First Node of the Chain
     {
-        ChainNode<T>* y = new ChainNode<T>(currX, currY, healthy); //creation of Node Pointer
+        ChainNode<T>* y = new ChainNode<T>(currX, currY, healthy,1); //creation of Node Pointer
         y->ChainNode<T>::setNode();
         y->data[0] = currX;
         y->data[1] = currY;
         y->data[2] = healthy;
+        y->data[3] = 1; //first Node of every chain is created on the first day of the simulation
         first = y;
         return *this;
     }
 
-    Chain<T>& Insert(int k) //Insert Node
+    Chain<T>& Insert(int k, int day) //Insert Node
     {
         ChainNode<T>* p = first;
         if (p->link)
-            for (int i = 1; i < k && p; i++)
+            for (int i = 1; i < k && p; i++) {
                 p = p->link;
-                
+            }
         while (k-- > 0) {
             int currX = rand() % 61;
             int currY = rand() % 61;
             int healthy = rand() % 2;
-            ChainNode<T>* y = new ChainNode<T>(currX, currY, healthy); //creation of Node Pointer
+            ChainNode<T>* y = new ChainNode<T>(currX, currY, healthy,day); //creation of Node Pointer
             y->ChainNode<T>::setNode();
             y->data[0] = currX;
             y->data[1] = currY;
             y->data[2] = healthy;
+            y->data[3] = day;
             p->link = y;
             p = p->link;
         }
@@ -129,10 +118,12 @@ public:
     Chain<T>& InsertBetween(int k, int x, int y, int h)
     {
         ChainNode<T>* p = first;
+        int daySim;
         if (p->link && p)
-            for (int index = 1; index < k - 1; index++)
+            for (int index = 1; index < k - 1; index++) {
                 p = p->link;
-
+                daySim = p->data[3];
+            }
         ChainNode<T>* nextLink = p->link;
 
         ChainNode<T>* z = new ChainNode<T>(x, y, h); //creation of Node Pointer
@@ -140,19 +131,19 @@ public:
         z->data[0] = x;
         z->data[1] = y;
         z->data[2] = h;
+        z->data[3] = daySim;
         p->link = z;
         z->link = nextLink;
 
         return *this;
     }
 
-
     void Output()  //Outputs the whole chain in the following format: node1-node2-etc
     {
         ChainNode<T>* tmp;
         tmp = first;
         while (tmp) { //when it reaches the end, tmp becomes null. Else, if the chain is empty, it doesn't print anything
-            cout << " -> " << "{" << tmp->data[0] << ", " << tmp->data[1] << ", " << tmp->data[2] << "}";
+            cout << " -> " << "{" << tmp->data[3] << "," << tmp->data[0] << ", " << tmp->data[1] << ", " << tmp->data[2] << "}";
             tmp = tmp->link;
         }
         cout << endl;
@@ -172,12 +163,14 @@ public:
     int currentX; // the current value on the X axis
     int currentY; // the current value on the Y axis
     float speed; // The speed the human will go to the destination
+    int currentDay;
 
-    ChainNode(int x, int y, int health)
+    ChainNode(int x, int y, int health, int day)
     {
         currentX = x;
         currentY = y;
         healthy = health;
+        currentDay = day;
     }
 
     int findDestinationX()
@@ -203,37 +196,51 @@ public:
         int currX = this->currentX;
         int currY = this->currentY;
         int healthy = this->healthy;
+        int day = this->currentDay;
         this->data[0] = currX;
         this->data[1] = currY;
         this->data[2] = healthy;
+        this->data[3] = day;
     }
 
-    int data[3];
+    int data[4];
 
 private:
     ChainNode<T>* link;
 };
 
+void MakeSimulationChain(int stX, int stY, int stH, int simulationDays) {
+    Chain<int>h1;
+    h1.FirstNodeCreation(stX, stY, 1);
+    h1.Insert(2879,1);
+    h1.Insert(2880, 8);
+    int currDay = 2;
+    while(currDay <= simulationDays) {
+        h1.Insert(2880, currDay);
+        currDay++;
+    }
+    h1.Output();
+}
+
 int main()
 {
     srand(time(0));
-    int displayX;
-    int displayY;
-    int displayHealth;
     int startingX = rand() % 61;
     int startingY = rand() % 61;
+    int simulationDays;
+    cout << "Number of simulation days: ";
+    //cin >> simulationDays;
+    //MakeSimulationChain(startingX,startingY,1,simulationDays);
+    cout << endl;
     Chain<int> h1;
     h1.FirstNodeCreation(startingX, startingY, 1);
-    h1.Output();
-    h1.Insert(100);
+    h1.Insert(2879, 1);
+    h1.Insert(2880, 2);
+    h1.Insert(2880, 3);
+    //h1.InsertBetween(5, 0, 0, 0);
+    //h1.Delete(1);// Deletes first node
     h1.Output();
     cout << endl;
-    h1.InsertBetween(5, 0, 0, 0);
-    //h1.Delete(1); Deletes first node
-    h1.Output();
-    cout << endl;
-    //h1.Details(3, displayX, displayY, displayHealth);
-
-    //h1.Details(1, displayX, displayY, displayHealth);
+    h1.Details(4000);
     return 0;
 }
