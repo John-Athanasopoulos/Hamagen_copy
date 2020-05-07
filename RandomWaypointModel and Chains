@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <ctime>
+#include <cmath>
 
 using namespace std;
 
@@ -100,7 +101,7 @@ public:
             for (int i = 1; i < k && p; i++) {
                 p = p->link;
             }
-        while (k-- > 0) {
+        while (k-- > 0 && p) {
             int currX = rand() % 61;
             int currY = rand() % 61;
             int healthy = rand() % 2;
@@ -189,7 +190,23 @@ public:
         return *this;
     }
 
-
+    Chain<T>& SUMMARIZE_TRAJECTORY(int day, int daysBefore, Chain<T> a) {
+        ChainNode<T>* p = first;
+        ChainNode<T>* l = first; //last node
+        int x1, x2, y1, y2;
+        while (day - p->data[3] >= daysBefore) { //while (currentDay - node's day >= minimum days for chain change)
+            x1 = p->data[0];
+            y1 = p->data[1];
+            p = p->link;
+            x2 = p->data[0];
+            y2 = p->data[1];
+            if (abs(x2 - x1) < 10 && abs(y2 - y1) < 10) {
+                l->link = p->link;
+                delete p;
+            }
+        }
+        return a;
+    }
 
 private:
     ChainNode<T>* first;
@@ -269,21 +286,31 @@ void MakeSimulationChain(int stX, int stY, int stH, int simulationDays) {
 int main()
 {
     srand(time(0));
-    int startingX = rand() % 61;
-    int startingY = rand() % 61;
+    int startingX = 0; // rand() % 61;
+    int startingY = 0; // rand() % 61;
     int simulationDays;
     //cout << "Number of simulation days: ";
     //cin >> simulationDays;
     //MakeSimulationChain(startingX,startingY,1,simulationDays);
     //cout << endl;
     Chain<int> h1;
+    Chain<int> h2;
     h1.FirstNodeCreation(startingX, startingY, 1);
+    h1.InsertBetween(2, 0, 0, 1);
+    h1.InsertBetween(2, 0, 0, 1);
+    h1.InsertBetween(2, 0, 0, 1);
+    h1.Insert(96, 1);
+    h1.Insert(100, 2);
+    h1.SUMMARIZE_TRAJECTORY(3, 1, h1);
+    /*startingX = rand() % 61;
+    startingY = rand() % 61;
+    h2.FirstNodeCreation(startingX, startingY, 0);
     h1.Insert(99, 1);
     h1.Delete(6);
     h1.Delete(15);
     h1.Delete(82);
     h1.Delete(45);
-    h1.REPAIR(1, h1);
+    h1.REPAIR(1, h1);*/
     //h1.InsertBetween(5, 0, 0, 0);
     //h1.Delete(1);// Deletes first node
     h1.Output();
