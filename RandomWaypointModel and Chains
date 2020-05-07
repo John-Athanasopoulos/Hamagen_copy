@@ -4,7 +4,8 @@
 #include <stdlib.h>
 #include <time.h>
 #include <ctime>
-#include <cmath>
+
+#define R 10
 
 using namespace std;
 
@@ -61,6 +62,20 @@ public:
         return false; //the node with index=f was not found
     }
 
+    int Search(const T& x) const //search for a node (x)
+    {
+        ChainNode<T>* currentNode = first;
+        int counter = 1;
+        while (currentNode && currentNode->data != x) { //runs when currentNode is not x
+            currentNode = currentNode->link;
+            counter++;
+        }
+        if (currentNode) { //if it is found, return its index
+            return counter;
+        }
+        return 0;
+    }
+
     Chain<T>& Delete(int k)
     {
         if (k < 1 || !first) { //if the node index (k) is incorrect (k<=0) or the first pointer is null
@@ -83,7 +98,7 @@ public:
 
     Chain<T>& FirstNodeCreation(int currX, int currY, int healthy) //Creation of the First Node of the Chain
     {
-        ChainNode<T>* y = new ChainNode<T>(currX, currY, healthy,1); //creation of Node Pointer
+        ChainNode<T>* y = new ChainNode<T>(currX, currY, healthy, 1); //creation of Node Pointer
         y->ChainNode<T>::setNode();
         y->data[0] = currX;
         y->data[1] = currY;
@@ -97,19 +112,18 @@ public:
     Chain<T>& Insert(int k, int day) //Insert Node
     {
         ChainNode<T>* p = first;
-        if (p->link)
-            for (int i = 1; i < k && p; i++) {
-                p = p->link;
-            }
-        while (k-- > 0 && p) {
-            int currX = rand() % 61;
-            int currY = rand() % 61;
+        while (p->link)
+            p = p->link;
+
+        while (k-- > 0) {
+            int currX = rand() % 20;
+            int currY = rand() % 20;
             int healthy = rand() % 2;
-            ChainNode<T>* y = new ChainNode<T>(currX, currY, healthy,day); //creation of Node Pointer
+            ChainNode<T>* y = new ChainNode<T>(currX, currY, healthy, day); //creation of Node Pointer
             y->ChainNode<T>::setNode();
             y->data[0] = currX;
             y->data[1] = currY;
-            y->data[2] = healthy;
+            y->data[2] = p->data[2]; // We continue with the same health
             y->data[3] = day;
             y->data[4] = p->data[4] + 30; //This node's seconds are equal to the former one's + 30
             p->link = y;
@@ -121,51 +135,27 @@ public:
 
     Chain<T>& InsertBetween(int k, int x, int y, int h)
     {
-        if (k != 1) {
-            ChainNode<T>* p = first;
-            int daySim = p->data[3];
-            if (p->link && p)
-                for (int index = 1; index < k - 1; index++) {
-                    p = p->link;
-                    daySim = p->data[3];
-                }
-            ChainNode<T>* nextLink = p->link;
+        ChainNode<T>* p = first;
+        int daySim = p->data[3];
 
-            ChainNode<T>* z = new ChainNode<T>(x, y, h, daySim); //creation of Node Pointer
-            z->ChainNode<T>::setNode();
-            z->data[0] = x;
-            z->data[1] = y;
-            z->data[2] = h;
-            z->data[3] = daySim;
-            z->data[4] = p->data[4] + 30;
-            p->link = z;
-            z->link = nextLink;
-            p = p->link;
-
-            while (p->link) {
-                int sec = p->data[4];
+        if (p->link && p)
+            for (int index = 1; index < k - 1; index++)
                 p = p->link;
-                p->data[4] = sec + 30;
-            }
 
-            return *this;
-        }
-        else {
-            cout << "Error: InsertBetween() used for the first node.." << endl;
-        }
+        ChainNode<T>* nextLink = p->link;
+
+        ChainNode<T>* z = new ChainNode<T>(x, y, h, daySim); //creation of Node Pointer
+        z->ChainNode<T>::setNode();
+        z->data[0] = x;
+        z->data[1] = y;
+        z->data[2] = h;
+        z->data[3] = daySim;
+        z->data[4] = p->data[4] + 30;
+        p->link = z;
+        z->link = nextLink;
+
+        return *this;
     }
-
-    void Output()  //Outputs the whole chain in the following format: node1-node2-etc
-    {
-        ChainNode<T>* tmp;
-        tmp = first;
-        while (tmp) { //when it reaches the end, tmp becomes null. Else, if the chain is empty, it doesn't print anything
-            cout << " -> " << "{" << tmp->data[3] << ", " << tmp->data[0] << ", " << tmp->data[1] << ", " << tmp->data[2] << ", " << tmp->data[4] << "}";
-            tmp = tmp->link;
-        }
-        cout << endl;
-    }
-
 
     Chain<T>& REPAIR(int day, Chain<T> a)
     {
@@ -186,30 +176,110 @@ public:
             }
             counter++;
         }
-        
+
         return *this;
     }
 
-    Chain<T>& SUMMARIZE_TRAJECTORY(int day, int daysBefore, Chain<T> a) {
+    Chain<T>& SUMMARIZE_TRAJECTORY(int day, int daysBefore) {
         ChainNode<T>* p = first;
-        ChainNode<T>* l = first; //last node
-        int x1, x2, y1, y2;
-        while (day - p->data[3] >= daysBefore) { //while (currentDay - node's day >= minimum days for chain change)
-            x1 = p->data[0];
-            y1 = p->data[1];
+        int counter = 0;
+        while (p->data[3] + daysBefore < day) {
             p = p->link;
-            x2 = p->data[0];
-            y2 = p->data[1];
-            if (abs(x2 - x1) < 10 && abs(y2 - y1) < 10) {
-                l->link = p->link;
-                delete p;
-            }
+            counter++;
         }
-        return a;
+        int x1, x2, y1, y2;
+        while (p && p->link) { //while (currentDay - node's day >= minimum days for chain change)
+            if (day - p->data[3] >= daysBefore) {
+                cout << p->data[3];
+                x1 = p->data[0];
+                y1 = p->data[1];
+                cout << p->data[3];
+                x2 = p->link->data[0];
+                y2 = p->link->data[1];
+                
+                if (abs(x1 - x2) < R && abs(y1 - y2) < R) {
+                    p = p->link;
+                    counter++;
+                    this->Delete(counter);
+                }
+            }
+            p = p->link;
+            counter++;
+        }
+        return *this;
+    }
+
+    void Output()  //Outputs the whole chain in the following format: node1-node2-etc
+    {
+        ChainNode<T>* tmp = first;
+        while (tmp) { //when it reaches the end, tmp becomes null. Else, if the chain is empty, it doesn't print anything
+            cout << " -> " << "{" << tmp->data[3] << ", " << tmp->data[0] << ", " << tmp->data[1] << ", " << tmp->data[2] << ", " << tmp->data[4] << "}";
+            // -> { day, x, y, health, seconds }
+            tmp = tmp->link;
+        }
+        cout << endl;
     }
 
 private:
     ChainNode<T>* first;
+};
+
+template<class T>
+class ChainNode {
+public:
+    friend Chain<T>;
+
+    int healthy; // 1 if healthy, 0 if ill
+    int destinationX; // destination on the X axis
+    int destinationY; // destination on the Y axis
+    int currentX; // the current value on the X axis
+    int currentY; // the current value on the Y axis
+    float speed; // The speed the human will go to the destination
+    int currentDay; //The number of the current day
+    int seconds; //The number of seconds since the beginning of the day
+
+    ChainNode(int x, int y, int health, int day)
+    {
+        currentX = x;
+        currentY = y;
+        healthy = health;
+        currentDay = day;
+    }
+
+    int findDestinationX()
+    {
+        int destinationX = rand() % 61;
+        return destinationX;
+    }
+
+    int findDestinationY()
+    {
+        int destinationY = rand() % 61;
+        return destinationY;
+    }
+
+    float humanSpeed()
+    {
+        float speed = (static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 3))) + 3;
+        return speed;
+    }
+
+    void setNode()
+    {
+        int currX = this->currentX;
+        int currY = this->currentY;
+        int healthy = this->healthy;
+        int day = this->currentDay;
+        this->data[0] = currX;
+        this->data[1] = currY;
+        this->data[2] = healthy;
+        this->data[3] = day;
+    }
+
+    int data[5];
+
+private:
+    ChainNode<T>* link;
 };
 
 template<class T>
