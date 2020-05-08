@@ -182,30 +182,23 @@ public:
 
     Chain<T>& SUMMARIZE_TRAJECTORY(int day, int daysBefore) {
         ChainNode<T>* p = first;
-        int counter = 0;
-        while (p->data[3] + daysBefore < day) {
+
+        while (p->link && !(p->data[3] >= day - daysBefore)) {
             p = p->link;
-            counter++;
         }
-        int x1, x2, y1, y2;
-        while (p && p->link) { //while (currentDay - node's day >= minimum days for chain change)
-            if (day - p->data[3] >= daysBefore) {
-                cout << p->data[3];
-                x1 = p->data[0];
-                y1 = p->data[1];
-                cout << p->data[3];
-                x2 = p->link->data[0];
-                y2 = p->link->data[1];
-                
-                if (abs(x1 - x2) < R && abs(y1 - y2) < R) {
+
+        while (p->link) {
+            if (p->data[3] >= day - daysBefore) {
+                if (abs(p->data[0] - p->link->data[0]) < R && abs(p->data[1] - p->link->data[1]) < R) {
+                    p->link = p->link->link;
+                } else {
                     p = p->link;
-                    counter++;
-                    this->Delete(counter);
                 }
+            } else {
+                p = p->link;
             }
-            p = p->link;
-            counter++;
         }
+
         return *this;
     }
 
