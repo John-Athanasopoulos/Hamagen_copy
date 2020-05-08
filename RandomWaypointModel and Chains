@@ -347,37 +347,68 @@ void MakeSimulationChain(int stX, int stY, int stH, int simulationDays) {
     h1.Output();
 }
 
-int main()
-{
+int main() {
+    //Grid* grid = new Grid();
+
     srand(time(0));
-    int startingX = 0; // rand() % 61;
-    int startingY = 0; // rand() % 61;
-    int simulationDays;
-    //cout << "Number of simulation days: ";
-    //cin >> simulationDays;
-    //MakeSimulationChain(startingX,startingY,1,simulationDays);
-    //cout << endl;
+    int displayX;
+    int displayY;
+    int displayHealth;
+    int startingX = rand() % 61;
+    int startingY = rand() % 61;
     Chain<int> h1;
-    Chain<int> h2;
     h1.FirstNodeCreation(startingX, startingY, 1);
-    h1.InsertBetween(2, 0, 0, 1, 1);
-    h1.InsertBetween(2, 0, 0, 1, 1);
-    h1.InsertBetween(2, 0, 0, 1, 1);
-    h1.Insert(96, 1);
-    h1.Insert(100, 2);
-    h1.SUMMARIZE_TRAJECTORY(3, 1, h1);
-    /*startingX = rand() % 61;
+
+    startingX = rand() % 61;
     startingY = rand() % 61;
+    Chain<int> h2;
     h2.FirstNodeCreation(startingX, startingY, 0);
-    h1.Insert(99, 1);
-    h1.Delete(6);
-    h1.Delete(15);
-    h1.Delete(82);
-    h1.Delete(45);
-    h1.REPAIR(1, h1);*/
-    //h1.InsertBetween(5, 0, 0, 0, 1);
-    //h1.Delete(1);// Deletes first node
+
+    h1.Insert(2, 1);
+    h2.Insert(2, 1);
     h1.Output();
-    cout << endl;
+    h2.Output();
+    cout << "\n\n";
+    h2.Insert(2, 2);
+    h1.Insert(2, 2);
+    h1.Output();
+    h2.Output();
+    cout << "\n\n";
+    h2.Insert(3, 3);
+    h1.Insert(3, 3);
+    h1.Output();
+    h2.Output();
+    cout << "\n\n";
+    h2.Insert(7, 4);
+    h1.Insert(7, 4);
+    h1.Output();
+    h2.Output();
+    cout << "\n\n";
+    //cout << h1.Length() << endl; // debug
+    h1 = h1.SUMMARIZE_TRAJECTORY(4, 3);
+    //cout << h1.Length() << endl; // debug
+    h1.Output();
+    // cout << h2.Length() << endl; // debug
+    h2 = h2.SUMMARIZE_TRAJECTORY(4, 3);
+    // cout << h2.Length() << endl; // debug
+    h2.Output();
+
+    cout << "\n\n";
+
+    //cout << h1.Length() << endl; // debug
+    h1 = h1.REPAIR(1);
+    h1 = h1.REPAIR(2);
+    h1 = h1.REPAIR(3);
+    h1 = h1.REPAIR(4);
+    //cout << h1.Length() << endl; // debug
+    h1.Output();
+    // cout << h2.Length() << endl; // debug
+    h2 = h2.REPAIR(1);
+    h2 = h2.REPAIR(2);
+    h2 = h2.REPAIR(3);
+    h2 = h2.REPAIR(4);
+    // cout << h2.Length() << endl; // debug
+    h2.Output();
+    //h1.Details(1, displayX, displayY, displayHealth);
     return 0;
 }
