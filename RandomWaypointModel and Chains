@@ -360,9 +360,9 @@ int main()
     Chain<int> h1;
     Chain<int> h2;
     h1.FirstNodeCreation(startingX, startingY, 1);
-    h1.InsertBetween(2, 0, 0, 1);
-    h1.InsertBetween(2, 0, 0, 1);
-    h1.InsertBetween(2, 0, 0, 1);
+    h1.InsertBetween(2, 0, 0, 1, 1);
+    h1.InsertBetween(2, 0, 0, 1, 1);
+    h1.InsertBetween(2, 0, 0, 1, 1);
     h1.Insert(96, 1);
     h1.Insert(100, 2);
     h1.SUMMARIZE_TRAJECTORY(3, 1, h1);
@@ -375,7 +375,7 @@ int main()
     h1.Delete(82);
     h1.Delete(45);
     h1.REPAIR(1, h1);*/
-    //h1.InsertBetween(5, 0, 0, 0);
+    //h1.InsertBetween(5, 0, 0, 0, 1);
     //h1.Delete(1);// Deletes first node
     h1.Output();
     cout << endl;
