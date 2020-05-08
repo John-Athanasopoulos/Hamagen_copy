@@ -133,10 +133,9 @@ public:
         return *this;
     }
 
-    Chain<T>& InsertBetween(int k, int x, int y, int h)
+    Chain<T>& InsertBetween(int k, int x, int y, int h, int daySim)
     {
         ChainNode<T>* p = first;
-        int daySim = p->data[3];
 
         if (p->link && p)
             for (int index = 1; index < k - 1; index++)
@@ -157,24 +156,26 @@ public:
         return *this;
     }
 
-    Chain<T>& REPAIR(int day, Chain<T> a)
+    Chain<T>& REPAIR(int day)
     {
-        ChainNode<T>* iter = first;
-        int sec1;
-        int sec2; // sec1 and sec2 are used for the calculation of a difference of more than 30 seconds, which indicates the loss of a node
-        int counter = 2; // counts the number of the node in the chain, in order to use InsertBetween()
-        while (iter->link) {
-            int currh = iter->data[2];
-            sec1 = iter->data[4];
-            iter = iter->link;
-            sec2 = iter->data[4];
-            if (sec2 - sec1 > 30) {
-                int cx = rand() % 61;
-                int cy = rand() % 61;
-                int ch = currh;
-                InsertBetween(counter, cx, cy, ch);
-            }
+        ChainNode<T>* p = first;
+        int counter = 1;
+
+        while (p->data[3] < day) {
+            p = p->link;
             counter++;
+        }
+
+        while (p->link && p->data[3] == day) {
+            if (p->link->data[4] - p->data[4] > 30 && p->data[3] == p->link->data[3]) {
+                int x = rand() % 61;
+                int y = rand() % 61;
+                int h = rand() % 2;
+                InsertBetween(counter + 1, x, y, h, day);
+            } else {
+                p = p->link;
+                counter++;
+            }
         }
 
         return *this;
