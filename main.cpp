@@ -2,7 +2,6 @@
 Εργασία από τους:
     ΑΜ: Π19005
     Ονοματεπώνυμο: Ιωάννης Αθανασόπουλος
-
     ΑΜ: Π19041
     Ονοματεπώνυμο: Ευστράτιος Δερμανούτσος
 */
@@ -33,54 +32,10 @@ int main() {
     startingY = h2.RandomInt();
     h2.FirstNodeCreation(startingX, startingY, 0);
 
-    h1.Insert(2, 1);
-    h2.Insert(2, 1);
-    h1.Output();
-    h2.Output();
-    cout << "\n\n";
-    h2.Insert(2, 2);
-    h1.Insert(2, 2);
-    h1.Output();
-    h2.Output();
-    cout << "\n\n";
-    h2.Insert(3, 3);
-    h1.Insert(3, 3);
-    h1.Output();
-    h2.Output();
-    cout << "\n\n";
-    h2.Insert(7, 4);
-    h1.Insert(7, 4);
-    h1.Output();
-    h2.Output();
-    cout << "\n\n";
-    //cout << h1.Length() << endl; // debug
-    h1 = h1.SUMMARIZE_TRAJECTORY(4, 3);
-    //cout << h1.Length() << endl; // debug
-    h1.Output();
-    // cout << h2.Length() << endl; // debug
-    h2 = h2.SUMMARIZE_TRAJECTORY(4, 3);
-    // cout << h2.Length() << endl; // debug
-    h2.Output();
+    h1.Insert(2879, 1);
+    h2.Insert(2879, 1);
 
-    cout << "\n\n";
-
-    //cout << h1.Length() << endl; // debug
-    h1 = h1.REPAIR(1);
-    h1 = h1.REPAIR(2);
-    h1 = h1.REPAIR(3);
-    h1 = h1.REPAIR(4);
-    //cout << h1.Length() << endl; // debug
-    h1.Output();
-    // cout << h2.Length() << endl; // debug
-    h2 = h2.REPAIR(1);
-    h2 = h2.REPAIR(2);
-    h2 = h2.REPAIR(3);
-    h2 = h2.REPAIR(4);
-    // cout << h2.Length() << endl; // debug
-    h2.Output();
-    //h1.Details(1, displayX, displayY, displayHealth);
-
-
+    SquareRegion SR1(0, 0, 20, 20);
     SquareRegion SR2(21, 0, 40, 20);
     SquareRegion SR3(41, 0, 60, 20);
     SquareRegion SR4(0, 21, 20, 40);
@@ -89,5 +44,9 @@ int main() {
     SquareRegion SR7(0, 41, 20, 60);
     SquareRegion SR8(21, 41, 40, 60);
     SquareRegion SR9(41, 41, 60, 60);
+
+    int u1 = h1.FIND_CROWDED_PLACES(1, 30, 86400, SR1, 86400);
+    int u2 = h2.FIND_CROWDED_PLACES(1, 30, 86400, SR1, 60000);
+    cout << "u1: " << u1 << " || u2: " << u2;
     return 0;
 }
