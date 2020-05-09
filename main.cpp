@@ -32,6 +32,8 @@ int main() {
     startingY = h2.RandomInt();
     h2.FirstNodeCreation(startingX, startingY, 0);
 
+    Chain<int> list[] = { h1,h2 };
+
     h1.Insert(2879, 1);
     h2.Insert(2879, 1);
 
@@ -45,8 +47,16 @@ int main() {
     SquareRegion SR8(21, 41, 40, 60);
     SquareRegion SR9(41, 41, 60, 60);
 
-    int u1 = h1.FIND_CROWDED_PLACES(1, 30, 86400, SR1, 86400);
-    int u2 = h2.FIND_CROWDED_PLACES(1, 30, 86400, SR1, 60000);
-    cout << "u1: " << u1 << " || u2: " << u2;
+    int u1 = h1.FIND_CROWDED_PLACES(1, 30, 86400, SR1, 60);
+
+    /*int k;
+    int sum = 0;
+    for (int i = 0; i < sizeof(list); i++) {
+        k = list[i].FIND_CROWDED_PLACES(1, 30, 86400, SR1, 60);
+        sum += k;
+    }
+    cout << sum;*/
+    cout << u1;
+
     return 0;
 }
