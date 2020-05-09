@@ -125,7 +125,12 @@ public:
             y->data[1] = currY;
             y->data[2] = p->data[2]; // We continue with the same health
             y->data[3] = day;
-            y->data[4] = p->data[4] + 30; //This node's seconds are equal to the former one's + 30
+            if (p->data[4] != 86400){
+                y->data[4] = p->data[4] + 30; //This node's seconds are equal to the former one's + 30
+            }
+            else {
+                y->data[4] = 30;
+            }
             p->link = y;
             p = p->link;
         }
@@ -172,7 +177,8 @@ public:
                 int y = rand() % 61;
                 int h = rand() % 2;
                 InsertBetween(counter + 1, x, y, h, day);
-            } else {
+            }
+            else {
                 p = p->link;
                 counter++;
             }
@@ -192,10 +198,12 @@ public:
             if (p->data[3] >= day - daysBefore) {
                 if (abs(p->data[0] - p->link->data[0]) < R && abs(p->data[1] - p->link->data[1]) < R) {
                     p->link = p->link->link;
-                } else {
+                }
+                else {
                     p = p->link;
                 }
-            } else {
+            }
+            else {
                 p = p->link;
             }
         }
@@ -212,6 +220,40 @@ public:
             tmp = tmp->link;
         }
         cout << endl;
+    }
+
+    int FIND_CROWDED_PLACES(int day, int starting_sec, int ending_sec, SquareRegion a, int minStay) { //
+        ChainNode<T>&* p = first;
+        int user_count = 0; //how many users standed in this square area during the given time interval for at least the minStay time specified
+        while (p->data[3] != day && p) {
+            p = p->link; //link till the first node of the chosen day, or until we reach the end of the chain meaning the day was incorrect
+        }
+        if (p && 30 <= starting_sec && 86370 <= starting_sec && 30 <= ending_sec && 86400 <= ending_sec && starting_sec < ending_sec) { //all the prerequisites
+            while (p->data[4] != starting_sec && p) {
+                p = p->link; //link until we find the node with data[4] = starting_sec
+            }
+            int difference_sec = ending_sec - starting_sec; //The difference in seconds
+            int numberNeeded = difference_sec % 30; //The nodes we need to check
+            int counter = 0; // counts how many consecutive nodes are in the square (counter <= numberNeeded)
+            int stayMinNodes = minStay % 30; //The minimum number of nodes needed for the method to return a value
+            while (p && numberNeeded > 0) {
+                if (p->data[0] >= a.minX && p->data[0] <= a.maxX && p->data[1] >= a.minY && p->data[1] <= a.maxY) {
+                    counter++;
+                }
+                else {
+                    counter = 0;
+                }
+                p = p->link;
+                numberNeeded--;
+            }
+            if (counter >= stayMinNodes) {
+                user_count = 1;
+            }
+        }
+        else {
+            cout << "The day, the starting second, the ending second or a combination of them is incorrect." << endl;
+        }
+        return user_count;
     }
 
 private:
@@ -276,71 +318,30 @@ private:
     ChainNode<T>* link;
 };
 
-template<class T>
-class ChainNode {
-public:
-    friend Chain<T>;
+class SquareRegion {
+    public:
+        int minX;
+        int minY;
+        int maxX;
+        int maxY;
 
-    int healthy; // 1 if healthy, 0 if ill
-    int destinationX; // destination on the X axis
-    int destinationY; // destination on the Y axis
-    int currentX; // the current value on the X axis
-    int currentY; // the current value on the Y axis
-    float speed; // The speed the human will go to the destination
-    int currentDay; //The number of the current day
-    int seconds; //The number of seconds since the beginning of the day
-
-    ChainNode(int x, int y, int health, int day)
-    {
-        currentX = x;
-        currentY = y;
-        healthy = health;
-        currentDay = day;
-    }
-
-    int findDestinationX()
-    {
-        int destinationX = rand() % 61;
-        return destinationX;
-    }
-
-    int findDestinationY()
-    {
-        int destinationY = rand() % 61;
-        return destinationY;
-    }
-
-    float humanSpeed()
-    {
-        float speed = (static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 3))) + 3;
-        return speed;
-    }
-
-    void setNode()
-    {
-        int currX = this->currentX;
-        int currY = this->currentY;
-        int healthy = this->healthy;
-        int day = this->currentDay;
-        this->data[0] = currX;
-        this->data[1] = currY;
-        this->data[2] = healthy;
-        this->data[3] = day;
-    }
-
-    int data[5];
-
-private:
-    ChainNode<T>* link;
+        SquareRegion(int miX, int miY, int maX, int maY) {
+            minX = miX;
+            minY = miY;
+            maxX = maX;
+            maxY = maY;
+        }
 };
+
+
 
 void MakeSimulationChain(int stX, int stY, int stH, int simulationDays) {
     Chain<int>h1;
     h1.FirstNodeCreation(stX, stY, 1);
-    h1.Insert(2879,1);
+    h1.Insert(2879, 1);
     h1.Insert(2880, 8);
     int currDay = 2;
-    while(currDay <= simulationDays) {
+    while (currDay <= simulationDays) {
         h1.Insert(2880, currDay);
         currDay++;
     }
@@ -349,7 +350,16 @@ void MakeSimulationChain(int stX, int stY, int stH, int simulationDays) {
 
 int main() {
     //Grid* grid = new Grid();
-
+    SquareRegion SR1(0, 0, 20, 20);
+    cout << SR1.maxX;
+    SquareRegion SR2(21, 0, 40, 20);
+    SquareRegion SR3(41, 0, 60, 20);
+    SquareRegion SR4(0, 21, 20, 40);
+    SquareRegion SR5(21, 21, 40, 40);
+    SquareRegion SR6(41, 21, 60, 40);
+    SquareRegion SR7(0, 41, 20, 60);
+    SquareRegion SR8(21, 41, 40, 60);
+    SquareRegion SR9(41, 41, 60, 60);
     srand(time(0));
     int displayX;
     int displayY;
@@ -358,57 +368,19 @@ int main() {
     int startingY = rand() % 61;
     Chain<int> h1;
     h1.FirstNodeCreation(startingX, startingY, 1);
-
-    startingX = rand() % 61;
-    startingY = rand() % 61;
-    Chain<int> h2;
-    h2.FirstNodeCreation(startingX, startingY, 0);
-
-    h1.Insert(2, 1);
-    h2.Insert(2, 1);
+    h1.Insert(2879, 1);
+    h1.Insert(2880, 2);
+    h1.Insert(2880, 3);
+    h1.Delete(44);
+    h1.Delete(82);
+    h1.Delete(12);
+    h1.Delete(96);
+    h1.Delete(15);
     h1.Output();
-    h2.Output();
-    cout << "\n\n";
-    h2.Insert(2, 2);
-    h1.Insert(2, 2);
+    h1.REPAIR(1);
+    h1.REPAIR(2);
+    h1.REPAIR(3);
+    cout << "\n\n\n" << endl;
     h1.Output();
-    h2.Output();
-    cout << "\n\n";
-    h2.Insert(3, 3);
-    h1.Insert(3, 3);
-    h1.Output();
-    h2.Output();
-    cout << "\n\n";
-    h2.Insert(7, 4);
-    h1.Insert(7, 4);
-    h1.Output();
-    h2.Output();
-    cout << "\n\n";
-    //cout << h1.Length() << endl; // debug
-    h1 = h1.SUMMARIZE_TRAJECTORY(4, 3);
-    //cout << h1.Length() << endl; // debug
-    h1.Output();
-    // cout << h2.Length() << endl; // debug
-    h2 = h2.SUMMARIZE_TRAJECTORY(4, 3);
-    // cout << h2.Length() << endl; // debug
-    h2.Output();
-
-    cout << "\n\n";
-
-    //cout << h1.Length() << endl; // debug
-    h1 = h1.REPAIR(1);
-    h1 = h1.REPAIR(2);
-    h1 = h1.REPAIR(3);
-    h1 = h1.REPAIR(4);
-    //cout << h1.Length() << endl; // debug
-    h1.Output();
-    // cout << h2.Length() << endl; // debug
-    h2 = h2.REPAIR(1);
-    h2 = h2.REPAIR(2);
-    h2 = h2.REPAIR(3);
-    h2 = h2.REPAIR(4);
-    // cout << h2.Length() << endl; // debug
-    h2.Output();
-    //h1.Details(1, displayX, displayY, displayHealth);
     return 0;
 }
