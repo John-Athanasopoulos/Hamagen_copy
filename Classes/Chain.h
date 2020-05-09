@@ -22,16 +22,16 @@ public:
         this->name = name;
         first = 0;
     }
-    ~Chain() { // Destructor
-        ChainNode<T>* next;
+    //~Chain() { // Destructor
+    //    ChainNode<T>* next;
 
-        // Διαγράφει έναν κόμβο και συνεχίζει με τον επόμενο
-        while (first) {
-            next = first->link;
-            delete first;
-            first = next;
-        }
-    }
+    //    // Διαγράφει έναν κόμβο και συνεχίζει με τον επόμενο
+    //    while (first) {
+    //        next = first->link;
+    //        delete first;
+    //        first = next;
+    //    }
+    //}
 
     /* Παίρνει ως είσοδο την τροχιά ενός χρήστη για μία συγκεκριμένη ημέρα, θα την
     συγκρίνει με τις τροχιές των ασθενών και θα επιστρέφει TRUE αν ο χρήστης βρέθηκε
@@ -48,7 +48,7 @@ public:
     int FIND_CROWDED_PLACES(int day, int starting_sec, int ending_sec, SquareRegion a, int minStay) { //
         ChainNode<T>* p = first;
         int user_count = 0; //how many users standed in this square area during the given time interval for at least the minStay time specified
-        while (p->data[3] != day && p) {
+        while (p &&p->data[3] != day) {
             p = p->link; //link till the first node of the chosen day, or until we reach the end of the chain meaning the day was incorrect
         }
         if (p && 30 <= starting_sec && 86400 >= starting_sec && 30 <= ending_sec && 86400 >= ending_sec && starting_sec < ending_sec) { //all the prerequisites
@@ -56,22 +56,23 @@ public:
                 p = p->link; //link until we find the node with data[4] = starting_sec
             }
             int difference_sec = ending_sec - starting_sec; //The difference in seconds
-            int numberNeeded = difference_sec % 30; //The nodes we need to check
+            int numberNeeded = difference_sec / 30; //The nodes we need to check
             int counter = 0; // counts how many consecutive nodes are in the square (counter <= numberNeeded)
-            int stayMinNodes = minStay % 30; //The minimum number of nodes needed for the method to return a value
+            int stayMinNodes = minStay / 30; //The minimum number of nodes needed for the method to return a value
 
             while (p && numberNeeded > 0) {
                 if (p->data[0] >= a.minX && p->data[0] <= a.maxX && p->data[1] >= a.minY && p->data[1] <= a.maxY) {
                     counter++;
+                    if (counter >= stayMinNodes) {
+                        user_count = 1;
+                        return user_count;
+                    }
                 }
                 else {
                     counter = 0;
                 }
                 p = p->link;
                 numberNeeded--;
-            }
-            if (counter >= stayMinNodes) {
-                user_count = 8;
             }
         }
         else {
