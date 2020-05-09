@@ -2,10 +2,10 @@
 
 class SquareRegion {
 public:
-    int minX; // Ελάχιστη τιμή του Χ
-    int minY; // Ελάχιστη τιμή του Υ
-    int maxX; // Μέγιστη τιμή του Χ
-    int maxY; // Μέγιστη τιμή του Υ
+    int minX; // Ξ•Ξ»Ξ¬Ο‡ΞΉΟƒΟ„Ξ· Ο„ΞΉΞΌΞ® Ο„ΞΏΟ… Ξ§
+    int minY; // Ξ•Ξ»Ξ¬Ο‡ΞΉΟƒΟ„Ξ· Ο„ΞΉΞΌΞ® Ο„ΞΏΟ… Ξ¥
+    int maxX; // ΞΞ­Ξ³ΞΉΟƒΟ„Ξ· Ο„ΞΉΞΌΞ® Ο„ΞΏΟ… Ξ§
+    int maxY; // ΞΞ­Ξ³ΞΉΟƒΟ„Ξ· Ο„ΞΉΞΌΞ® Ο„ΞΏΟ… Ξ¥
 
     // Constructor
     SquareRegion(int miX, int miY, int maX, int maY) {
