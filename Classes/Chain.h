@@ -14,46 +14,95 @@ using namespace std;
 template<class T>
 class ChainNode;
 template<class T>
-class Chain 
+class Chain
 {
 public:
     // Constructor
-    Chain(string name) 
-    { 
+    Chain(string name)
+    {
         this->name = name; // Θέτουμε όνομα με σκοπό να ξεχωρίζονται οι χρήστες
 
         // Αρχικές συντεταγμένες (x,y)
         int startingX = RandomInt();
         int startingY = RandomInt();
-        int startingH = rand() % 2; // Αρχική κατάσταση υγείας
+        int startingH = rand() % 2; // Αρχική κατάσταση υγείας (1 αν είναι υγιής και 0 αν είναι ασθενής
         FirstNodeCreation(startingX, startingY, startingH); // Δημιουργούμε τον πρώτο κόμβο
-    } 
-    /*
-    // Destructor
-    ~Chain() 
-    { 
-        ChainNode<T>* next = first->link;
+    }
 
-        
-        // Διαγράφει έναν κόμβο και συνεχίζει με τον επόμενο μέχρι να διαγραφούν όλοι
-        while (next) {
-            delete first;
-            first = next;
-            next = first->link;
+    bool isHealthy(){ //method to check if the current user is healthy or a patient at the start of the program
+        ChainNode<T>* p = first;
+        bool healthy;
+        if (p->data[2] == 1) {
+            healthy = true;
         }
-    }*/
-    
+        else {
+            healthy = false;
+        }
+        return healthy;
+    }
+
+    bool POSSIBLE_COVID_19_INFECTION(int radius, int day, vector<Chain<int>> patientList, int minStay) { //minStay is counted in seconds. Time after was not needed, as every user moves for less than 30 seconds and then stays still until the 30 seconds mark
+        ChainNode<T>* p = first;
+        int counter = 0; //counts for how many consecutive nodes the healthy person is near a Covid-19 patient
+        int minS = minStay / 30; //number of nodes for the person to be a possible Covid-19 case
+        bool check = true;
+        while (p && check) { //skip nodes of the main chain till the desired day
+            if (p->data[3] < day) {
+                p = p->link;
+            }
+            else {
+                check = false;
+            }
+        }
+        for (Chain<int> pat : patientList) { //for every patient
+            ChainNode<T>* y = pat.first;
+            bool check2 = true;
+            while (y && check2) { //skip nodes of the patient chain till the desired day
+                if (y->data[3] < day) {
+                    y = y->link;
+                }
+                else {
+                    check = false;
+                }
+            }
+            while (y) {
+                if (y->data[3] == day) {
+                    if (abs(p->data[0] - y->data[0]) <= radius && abs(p->data[1] - y->data[1]) <= radius) { //if user's coordinates are within the patient's radius
+                        counter++;
+                        if (counter >= minStay) {
+                            return true; //the user is a possible Covid-19 patient
+                        }
+                    }
+                    else {
+                        counter = 0;
+                    }
+                    y = y->link;
+                }
+                else {
+                    y = 0;
+                }
+            }
+        }
+        return false;
+    }
+
+
     /* Ψάχνει για την συγκεκριμένη μέρα και για τα συγκεκριμένα αρχικά και τελικά δευτερόλεπτα
     αν ο χρήστης έμεινε στην τετραγωνική περιοχή που ορίστηκε για ένα συγκεκριμένο χρονικό διάστημα.*/
     int FIND_CROWDED_PLACES(int day, int starting_sec, int ending_sec, SquareRegion a, int minStay) {
         ChainNode<T>* p = first; // Ξεκινάμε από τον πρώτο κόμβο
 
         int user_count = 0; // Αριθμός χρηστών που έμειναν στην ίδια περιοχή για minStay χρόνο
-
+        bool check = true;
         // Προσπερνάμε τους κόμβους που βασίζονται σε προηγούμενες ημέρες
-        while (p && p->data[3] < day)
-            p = p->link;
-
+        while (p && check) {
+            if (p->data[3] < day) {
+                p = p->link;
+            }
+            else {
+                check = false;
+            }
+        }
         if (p && 30 <= starting_sec && 86400 >= starting_sec && 30 <= ending_sec && 86400 >= ending_sec && starting_sec < ending_sec) {
             // Προσπερνάμε τους κόμβους που βασίζονται σε προηγούμενες χρονικές στιγμές
             while (p->data[4] != starting_sec && p)
@@ -71,19 +120,21 @@ public:
                         user_count = 1;
                         return user_count;
                     }
-                } else
+                }
+                else
                     counter = 0;
 
                 p = p->link;
                 numberNeeded--;
             }
-        } else
+        }
+        else
             cout << "Μη έγκυρο input!" << endl;
-        
+
         return user_count;
     }
 
-    /* Συμπληρώνει αυτά τα κενά που μπορούν να συμβούν στην καταγραφή της τροχιάς 
+    /* Συμπληρώνει αυτά τα κενά που μπορούν να συμβούν στην καταγραφή της τροχιάς
     ενός χρήστη. */
     Chain<T>& REPAIR(int day)
     {
@@ -132,9 +183,11 @@ public:
             if (p->data[3] >= day - daysBefore && p->data[3] == p->link->data[3]) {
                 if (abs(p->data[0] - p->link->data[0]) < R && abs(p->data[1] - p->link->data[1]) < R) {
                     p->link = p->link->link;
-                } else
+                }
+                else
                     p = p->link;
-            } else
+            }
+            else
                 p = p->link;
         }
 
@@ -154,7 +207,7 @@ public:
         y->data[1] = currY;
         y->data[2] = healthy;
         // Ο πρώτος κόμβος κάθε αλυσίδας βασίζεται πάντα στην πρώτη ημέρα
-        y->data[3] = 1; 
+        y->data[3] = 1;
         y->data[4] = 30;
 
         first = y; // Ορίζουμε τον κόμβο ως πρώτο
@@ -187,8 +240,8 @@ public:
             y->data[2] = p->data[2]; // Η υγεία παραμένει σταθερή
             y->data[3] = day;
             // Τα δευτερόλεπτα του κόμβου ισούνται με αυτά του προηγούμενου + 30
-            y->data[4] = p->data[4] + 30; 
-            
+            y->data[4] = p->data[4] + 30;
+
             // Τον προσθέτουμε στην αλυσίδα
             p->link = y;
             p = p->link;
@@ -231,7 +284,7 @@ public:
     }
 
     // Επιστρέφει το μήκος της αλυσίδας
-    int Length() const 
+    int Length() const
     {
         ChainNode<T>* currentNode = first; // Παίρνουμε τον πρώτο κόμβο
         int value = 1; // Αρχικοιποιούμε την τιμή με την θέση του πρώτου κόμβου
@@ -260,7 +313,7 @@ public:
 
         while (currentNode && currentNode->data != x) { // Όσο ο τρέχων κόμβος δεν είναι ο x
             // Συνεχίζουμε στον επόμενο
-            currentNode = currentNode->link; 
+            currentNode = currentNode->link;
             counter++;
         }
 
@@ -280,9 +333,10 @@ public:
         ChainNode<T>* p = first;  // Παίρνουμε τον πρώτο κόμβο
 
         // Αν θέλουμε να διαγραφεί ο πρώτος κόμβος, τότε θέτουμε τον δεύτερο ως αρχή της αλυσίδας
-        if (k == 1) { 
+        if (k == 1) {
             first = first->link;
-        } else { // Αλλιώς, κάνουμε όλες τις απαραίτητες μετατροπές, πριν διαγράψουμε τον κόμβο
+        }
+        else { // Αλλιώς, κάνουμε όλες τις απαραίτητες μετατροπές, πριν διαγράψουμε τον κόμβο
             ChainNode<T>* q = first;
 
             for (int i = 1; i < k - 1 && q; i++)
@@ -304,7 +358,7 @@ public:
         cout << name; // Εκτυπώνουμε το όνομα πρώτα με σκοπό να ξεχωρίζουμε το άτομο
 
         while (p) { // Όσο ο κόμβος p δεν είναι NULL, εκτυπώνουμε τα στοιχεία του
-            cout << " -> " << "{" << p->data[3] << ", " << p->data[0] << ", " << p->data[1] << ", " <<p->data[2] << ", " << p->data[4] << "}";
+            cout << " -> " << "{" << p->data[3] << ", " << p->data[0] << ", " << p->data[1] << ", " << p->data[2] << ", " << p->data[4] << "}";
             // format =  -> { day, x, y, health, seconds }
 
             p = p->link; // συνεχίζουμε με τον επόμενο κόμβο
