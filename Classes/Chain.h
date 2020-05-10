@@ -45,7 +45,7 @@ public:
     
     /* Ψάχνει για την συγκεκριμένη μέρα και για τα συγκεκριμένα αρχικά και τελικά δευτερόλεπτα
     αν ο χρήστης έμεινε στην τετραγωνική περιοχή που ορίστηκε για ένα συγκεκριμένο χρονικό διάστημα.*/
-    int FIND_CROWDED_PLACES(int day, int starting_sec, int ending_sec, SquareRegion a, int minStay) { //
+    int FIND_CROWDED_PLACES(int day, int starting_sec, int ending_sec, SquareRegion a, int minStay) {
         ChainNode<T>* p = first; // Ξεκινάμε από τον πρώτο κόμβο
 
         int user_count = 0; // Αριθμός χρηστών που έμειναν στην ίδια περιοχή για minStay χρόνο
