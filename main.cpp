@@ -22,20 +22,26 @@ int main() {
     int displayX;
     int displayY;
     int displayHealth;
-    Chain<int> h1("Stratis");
-    int startingX = h1.RandomInt();
-    int startingY = h1.RandomInt();
-    h1.FirstNodeCreation(startingX, startingY, 1);
 
-    Chain<int> h2("John");
-    startingX = h2.RandomInt();
-    startingY = h2.RandomInt();
-    h2.FirstNodeCreation(startingX, startingY, 0);
+    // Δημιουργούμε Instances των χρηστών
+    Chain<int> h1("Στρατής");
+    Chain<int> h2("Γιάννης");
+    Chain<int> h3("Μαρία");
+    Chain<int> h4("Νίκος");
+    Chain<int> h5("Θανάσσης");
+    Chain<int> h6("Πέτρος");
+    Chain<int> h7("Μίνα");
+    Chain<int> h8("Αναστασία");
+    Chain<int> h9("Παναγιώτα");
+    Chain<int> h10("Λεονάρντο");
 
-    Chain<int> list[] = { h1,h2 };
+    // Τα προσθέτουμε σε πίνακα για ευκολότερη χρήση
+    Chain<int> chains[10] = { h1, h2, h3, h4, h5, h6, h7, h8, h9, h10 };
 
-    h1.Insert(2879, 1);
-    h2.Insert(2879, 1);
+    // Προσθέτουμε κόμβους
+    for (int i = 0; i < 2; i++) // Για καθε μέρα
+        for (Chain<int> h : chains) // Για κάθε chain / χρήστη
+            i == 1 ? h.Insert(2879, i) : h.Insert(2880, i); // Η πρώτη ημέρα ήδη περιέχει τον πρώτο κόμβο
 
     SquareRegion SR1(0, 0, 20, 20);
     SquareRegion SR2(21, 0, 40, 20);
