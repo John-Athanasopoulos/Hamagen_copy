@@ -14,12 +14,12 @@ using namespace std;
 template<class T>
 class ChainNode;
 template<class T>
-class Chain 
+class Chain
 {
 public:
     // Constructor
-    Chain(string name) 
-    { 
+    Chain(string name)
+    {
         this->name = name; // Θέτουμε όνομα με σκοπό να ξεχωρίζονται οι χρήστες
 
         // Αρχικές συντεταγμένες (x,y)
@@ -27,6 +27,17 @@ public:
         int startingY = RandomInt();
         int startingH = rand() % 2; // Αρχική κατάσταση υγείας
         FirstNodeCreation(startingX, startingY, startingH); // Δημιουργούμε τον πρώτο κόμβο
+    }
+
+    // Ελέγχει, στην αρχή, την υγεία του χρήστη και επιστρέφει true/false αναλόγως
+    bool IsHealthy()
+    {
+        ChainNode<T>* p = first;
+
+        if (p->data[2] == 1)
+            return true;
+        else
+            return false;
     }
 
     bool POSSIBLE_COVID_19_INFECTION(int radius, int day, vector<Chain<int>> patientList, int minStay) // Το minStay εκφράζεται σε δευτερόλεπτα
@@ -49,7 +60,7 @@ public:
             ChainNode<T>* y = pat.first;
 
             // Προσπερνάμε τους κόμβους που βασίζονται σε προηγούμενες ημέρες
-            while (y) { 
+            while (y) {
                 if (y->data[3] < day)
                     y = y->link;
                 else
@@ -69,14 +80,15 @@ public:
                         counter = 0;
 
                     y = y->link; // Αλλάζουμε κόμβο
-                } else
+                }
+                else
                     break;
             }
         }
 
         return false; // Αν δεν έχει 
     }
-    
+
     /* Ψάχνει για την συγκεκριμένη μέρα και για τα συγκεκριμένα αρχικά και τελικά δευτερόλεπτα
     αν ο χρήστης έμεινε στην τετραγωνική περιοχή που ορίστηκε για ένα συγκεκριμένο χρονικό διάστημα.*/
     int FIND_CROWDED_PLACES(int day, int starting_sec, int ending_sec, SquareRegion a, int minStay) {
@@ -105,19 +117,21 @@ public:
                         user_count = 1;
                         return user_count;
                     }
-                } else
+                }
+                else
                     counter = 0;
 
                 p = p->link;
                 numberNeeded--;
             }
-        } else
+        }
+        else
             cout << "Μη έγκυρο input!" << endl;
-        
+
         return user_count;
     }
 
-    /* Συμπληρώνει αυτά τα κενά που μπορούν να συμβούν στην καταγραφή της τροχιάς 
+    /* Συμπληρώνει αυτά τα κενά που μπορούν να συμβούν στην καταγραφή της τροχιάς
     ενός χρήστη. */
     Chain<T>& REPAIR(int day)
     {
@@ -166,9 +180,11 @@ public:
             if (p->data[3] >= day - daysBefore && p->data[3] == p->link->data[3]) {
                 if (abs(p->data[0] - p->link->data[0]) < R && abs(p->data[1] - p->link->data[1]) < R) {
                     p->link = p->link->link;
-                } else
+                }
+                else
                     p = p->link;
-            } else
+            }
+            else
                 p = p->link;
         }
 
@@ -188,7 +204,7 @@ public:
         y->data[1] = currY;
         y->data[2] = healthy;
         // Ο πρώτος κόμβος κάθε αλυσίδας βασίζεται πάντα στην πρώτη ημέρα
-        y->data[3] = 1; 
+        y->data[3] = 1;
         y->data[4] = 30;
 
         first = y; // Ορίζουμε τον κόμβο ως πρώτο
@@ -221,8 +237,8 @@ public:
             y->data[2] = p->data[2]; // Η υγεία παραμένει σταθερή
             y->data[3] = day;
             // Τα δευτερόλεπτα του κόμβου ισούνται με αυτά του προηγούμενου + 30
-            y->data[4] = p->data[4] + 30; 
-            
+            y->data[4] = p->data[4] + 30;
+
             // Τον προσθέτουμε στην αλυσίδα
             p->link = y;
             p = p->link;
@@ -264,55 +280,11 @@ public:
         return *this; // Επιστρέφουμε την ανανεωμένη αλυσίδα
     }
 
-    // Ελέγχει, στην αρχή, την υγεία του χρήστη και επιστρέφει true/false αναλόγως
-    bool IsHealthy() 
-    {
-        ChainNode<T>* p = first;
-
-        if (p->data[2] == 1)
-            return true;
-        else
-            return false;
-    }
-
-    // Επιστρέφει το μήκος της αλυσίδας
-    int Length() const 
-    {
-        ChainNode<T>* currentNode = first; // Παίρνουμε τον πρώτο κόμβο
-        int value = 1; // Αρχικοιποιούμε την τιμή με την θέση του πρώτου κόμβου
-
-        // Για κάθε κόμβο, αυξάνουμε την τιμή κατά 1
-        while (currentNode) {
-            value++;
-            currentNode = currentNode->link;
-        }
-
-        return value; // Επιστρέφουμε την τιμή
-    }
-
     // Δημιουργία τυχαίας ακέραιας τιμής [1,60]
     int RandomInt()
     {
         int value = rand() % 61;
         return value; // Επιστρέφουμε την τιμή
-    }
-
-    // Αναζητά τον κόμβο στη θέση x
-    int Search(const T& x) const
-    {
-        ChainNode<T>* currentNode = first; // Ξεκινάει από τον πρώτο
-        int counter = 1; // ...και τη θέση του
-
-        while (currentNode && currentNode->data != x) { // Όσο ο τρέχων κόμβος δεν είναι ο x
-            // Συνεχίζουμε στον επόμενο
-            currentNode = currentNode->link; 
-            counter++;
-        }
-
-        if (currentNode) // Αν ο κόμβος βρέθηκε, επιστρέφουμε το index του
-            return counter;
-
-        return 0; // Αλλιώς, επιστρέφουμε 0
     }
 
     // Διαγράφει τον κόμβο στην θέση k
@@ -325,9 +297,11 @@ public:
         ChainNode<T>* p = first;  // Παίρνουμε τον πρώτο κόμβο
 
         // Αν θέλουμε να διαγραφεί ο πρώτος κόμβος, τότε θέτουμε τον δεύτερο ως αρχή της αλυσίδας
-        if (k == 1) { 
+        if (k == 1) {
             first = first->link;
-        } else { // Αλλιώς, κάνουμε όλες τις απαραίτητες μετατροπές, πριν διαγράψουμε τον κόμβο
+            first->data[4] = 30;
+        }
+        else { // Αλλιώς, κάνουμε όλες τις απαραίτητες μετατροπές, πριν διαγράψουμε τον κόμβο
             ChainNode<T>* q = first;
 
             for (int i = 1; i < k - 1 && q; i++)
@@ -351,7 +325,7 @@ public:
         cout << name; // Εκτυπώνουμε το όνομα πρώτα με σκοπό να ξεχωρίζουμε το άτομο
 
         while (p) { // Όσο ο κόμβος p δεν είναι NULL, εκτυπώνουμε τα στοιχεία του
-            cout << " -> " << "{" << p->data[3] << ", " << p->data[0] << ", " << p->data[1] << ", " <<p->data[2] << ", " << p->data[4] << "}";
+            cout << " -> " << "{" << p->data[3] << ", " << p->data[0] << ", " << p->data[1] << ", " << p->data[2] << ", " << p->data[4] << "}";
             // format =  -> { day, x, y, health, seconds }
 
             p = p->link; // συνεχίζουμε με τον επόμενο κόμβο
