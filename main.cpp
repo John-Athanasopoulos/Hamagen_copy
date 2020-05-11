@@ -93,7 +93,7 @@ int main() {
                 cout << h.GetName() << " - not healthy" << endl;
             }
             else
-                if (h.POSSIBLE_COVID_19_INFECTION(20, 1, patientList, 10))
+                if (h.POSSIBLE_COVID_19_INFECTION(20, i, patientList, 10))
                     cout << h.GetName() << " - possible patient" << endl;
                 else
                     cout << h.GetName() << " - healthy" << endl;
