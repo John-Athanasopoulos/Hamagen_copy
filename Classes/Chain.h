@@ -29,8 +29,8 @@ public:
         FirstNodeCreation(startingX, startingY, startingH); // Δημιουργούμε τον πρώτο κόμβο
     }
 
-    //minStay is counted in seconds. Time after was not needed, as every user moves for less than 30 seconds and then stays still until the 30 seconds mark
-    bool POSSIBLE_COVID_19_INFECTION(int radius, int day, vector<Chain<int>> patientList, int minStay) { 
+    bool POSSIBLE_COVID_19_INFECTION(int radius, int day, vector<Chain<int>> patientList, int minStay) // Το minStay εκφράζεται σε δευτερόλεπτα
+    {
         ChainNode<T>* p = first; // Ξεκινάμε από τον πρώτο κόμβο
 
         // Μετράει για πόσους διαδοχικούς κόμβους ένας υγιής χρήστης βρίσκεται κοντά σε ασθενή
