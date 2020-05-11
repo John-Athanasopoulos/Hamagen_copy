@@ -10,14 +10,12 @@
 #include <time.h>
 #include <vector>
 
-#include "Grid.h"
 #include "Chain.h"
 #include "SquareRegion.h"
 
 using namespace std;
 
 int main() {
-    //Grid* grid = new Grid();
 
     srand(time(0));
     int displayX;
@@ -26,28 +24,19 @@ int main() {
     int simulationDays;
 
     // Δημιουργούμε Instances των χρηστών
-    Chain<int> h1("Στρατής");
-    Chain<int> h2("Γιάννης");
-    Chain<int> h3("Μαρία");
-    Chain<int> h4("Νίκος");
-    Chain<int> h5("Θανάσσης");
-    Chain<int> h6("Πέτρος");
-    Chain<int> h7("Μίνα");
-    Chain<int> h8("Αναστασία");
-    Chain<int> h9("Παναγιώτα");
-    Chain<int> h10("Λεονάρντο");
+    Chain<int> h1("Stratis");
+    Chain<int> h2("John");
+    Chain<int> h3("Maria");
+    Chain<int> h4("Nikos");
+    Chain<int> h5("Thanasis");
+    Chain<int> h6("Peter");
+    Chain<int> h7("Mina");
+    Chain<int> h8("Anastasia");
+    Chain<int> h9("Panagiota");
+    Chain<int> h10("Leonardo");
 
     // Τα προσθέτουμε σε πίνακα για ευκολότερη χρήση
     Chain<int> chains[10] = { h1, h2, h3, h4, h5, h6, h7, h8, h9, h10 };
-
-    cout << "For how many days should the simulation run?" << endl << "Answer: ";
-    cin >> simulationDays;
-
-    // Προσθέτουμε κόμβους
-    for (int i = 1; i <= simulationDays; i++) // Για καθε μέρα
-        for (Chain<int> h : chains) { // Για κάθε chain / χρήστη
-            i == 1 ? h.Insert(2879, i) : h.Insert(2880, i); // Η πρώτη ημέρα ήδη περιέχει τον πρώτο κόμβο
-        }
 
     SquareRegion SR1(0, 0, 20, 20);
     SquareRegion SR2(21, 0, 40, 20);
@@ -60,19 +49,25 @@ int main() {
     SquareRegion SR9(41, 41, 60, 60);
 
     vector<Chain<int>> patientList;
+
+    cout << "For how many days should the simulation run?" << endl << "Answer: ";
+    cin >> simulationDays;
+
+    // Προσθέτουμε κόμβους
+    for (int i = 1; i <= simulationDays; i++) // Για καθε μέρα
+        for (Chain<int> h : chains) // Για κάθε chain / χρήστη
+            i == 1 ? h.Insert(2879, i) : h.Insert(2880, i); // Η πρώτη ημέρα ήδη περιέχει τον πρώτο κόμβο
+    
+
+    // Ελέγχουμε για κάθε χρήστη αν είναι υγιής
     for (Chain<int> h : chains) {
-        bool isHealthy;
-        isHealthy = h.isHealthy();
-        if (!isHealthy) {
+        if (!h.IsHealthy()) {
             patientList.push_back(h);
+            cout << h.GetName() << " - healthy" << endl;
+        } else {
+            bool u = h.POSSIBLE_COVID_19_INFECTION(20, 1, patientList, 60);
+            cout << h.GetName() << " - " << u << endl;
         }
-    }
-    if (h1.isHealthy()) {
-        bool u1 = h1.POSSIBLE_COVID_19_INFECTION(50, 1, patientList, 60);
-        cout << u1;
-    }
-    else {
-        cout << "unhealthy";
     }
 
     return 0;
