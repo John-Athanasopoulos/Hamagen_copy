@@ -64,13 +64,11 @@ int main() {
         if (!h.IsHealthy()) {
             patientList.push_back(h);
             cout << h.GetName() << " - not healthy" << endl;
-        } else {
-            bool u = h.POSSIBLE_COVID_19_INFECTION(20, 1, patientList, 60);
-            if (u)
+        } else
+            if (h.POSSIBLE_COVID_19_INFECTION(20, 1, patientList, 60))
                 cout << h.GetName() << " - possible patient" << endl;
             else
                 cout << h.GetName() << " - healthy" << endl;
-        }
     }
 
     return 0;
