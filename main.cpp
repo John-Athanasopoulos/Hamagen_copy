@@ -63,10 +63,13 @@ int main() {
     for (Chain<int> h : chains) {
         if (!h.IsHealthy()) {
             patientList.push_back(h);
-            cout << h.GetName() << " - healthy" << endl;
+            cout << h.GetName() << " - not healthy" << endl;
         } else {
             bool u = h.POSSIBLE_COVID_19_INFECTION(20, 1, patientList, 60);
-            cout << h.GetName() << " - " << u << endl;
+            if (u)
+                cout << h.GetName() << " - possible patient" << endl;
+            else
+                cout << h.GetName() << " - healthy" << endl;
         }
     }
 
