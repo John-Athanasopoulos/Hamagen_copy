@@ -9,9 +9,11 @@
 #include <stdlib.h>
 #include <time.h>
 #include <vector>
+#include<string>
 
 #include "Chain.h"
 #include "SquareRegion.h"
+
 
 using namespace std;
 
@@ -39,7 +41,7 @@ int main() {
     Chain<int> chains[10] = { h1, h2, h3, h4, h5, h6, h7, h8, h9, h10 };
 
     // Μερικοί ενδεικτικοί τετραγωνικοί χώροι. Μπορούν να προσταθούν οποιοιδήποτε άλλοι
-    SquareRegion SR1(0, 0, 20, 20); 
+    SquareRegion SR1(0, 0, 20, 20);
     SquareRegion SR2(21, 0, 40, 20);
     SquareRegion SR3(41, 0, 60, 20);
     SquareRegion SR4(0, 21, 20, 40);
@@ -53,6 +55,10 @@ int main() {
 
     cout << "For how many days should the simulation run?" << endl << "Answer: ";
     cin >> simulationDays;
+    while (simulationDays <= 0) {
+        cout << "The days of the simulation must be a number greater than 0." << endl << "Answer: ";
+        cin >> simulationDays;
+    }
 
     // Προσθέτουμε κόμβους
     for (int i = 1; i <= simulationDays; i++) // Για καθε μέρα
@@ -61,17 +67,17 @@ int main() {
 
     for (Chain<int> h : chains) {
         // Τυχαίοι κόμβοι προς διαγραφή (1-2800)
-        int d1 = 1 + rand() % 2800; 
-        int d2 = 1 + rand() % 2800;
-        int d3 = 1 + rand() % 2800;
-        int d4 = 1 + rand() % 2800;
-        int d5 = 1 + rand() % 2800;
+        int d1 = 1 + rand() % 2880;
+        int d2 = 1 + rand() % 2880;
+        int d3 = 1 + rand() % 2880;
+        int d4 = 1 + rand() % 2880;
+        int d5 = 1 + rand() % 2880;
         while (d1 != d2 && d1 != d3 && d1 != d4 && d1 != d5 && d2 != d3 && d2 != d4 && d2 != d5 && d3 != d4 && d3 != d5 && d4 != d5) {
-            d1 = 1 + rand() % 2800;
-            d2 = 1 + rand() % 2800;
-            d3 = 1 + rand() % 2800;
-            d4 = 1 + rand() % 2800;
-            d5 = 1 + rand() % 2800;
+            d1 = 1 + rand() % 2880;
+            d2 = 1 + rand() % 2880;
+            d3 = 1 + rand() % 2880;
+            d4 = 1 + rand() % 2880;
+            d5 = 1 + rand() % 2880;
         }
         // Μετά την διαγραφή, οι indexes των αλυσιδών μειώνονται αναλόγως
         h.Delete(d1);
@@ -104,6 +110,25 @@ int main() {
             h.SUMMARIZE_TRAJECTORY(i, 3);
         }
         cout << "------------------------------------" << endl;
+        string response;
+        cout << "Want to show the most crowded places of this day? Enter 'yes' or 'no': ";
+        cin >> response;
+        while (response != "yes" and response != "no") {
+            cout << "Remember.. enter 'yes' or 'no'." << endl << "Answer: ";
+            cin >> response;
+        }
+        if (response == "yes") {
+            int sum1255 = 0;
+            for (Chain<int> h : chains) {
+                sum1255 += h.FIND_CROWDED_PLACES(i, 12000, 86400, SR1, 10);
+            }
+            
+            cout << endl << sum1255 << " users stayed in this area for the minimum time." << endl;
+        }
+        cout << "------------------------------------" << endl;
+        if (i == simulationDays) {
+            cout << "Goodbye!" << endl;
+        }
     }
 
     // Κρατάμε το τερματικό ανοιχτό
