@@ -75,11 +75,13 @@ public:
                         // Αν ο χρήστης είναι πιθανός ασθενής, επιστρέφουμε true
                         if (counter >= minStay)
                             return true;
-                    } else // Αλλιώς ξαναμηδενίζουμε τον μετρητή
+                    }
+                    else // Αλλιώς ξαναμηδενίζουμε τον μετρητή
                         counter = 0;
 
                     y = y->link; // Αλλάζουμε κόμβο
-                } else
+                }
+                else
                     break;
             }
         }
@@ -98,10 +100,9 @@ public:
         while (p && p->data[3] < day)
             p = p->link;
 
-        if (p && 30 <= starting_sec && 86400 >= starting_sec && 30 <= ending_sec && 86400 >= ending_sec && starting_sec < ending_sec) {
+        if (p && p->link && 30 <= starting_sec && 86400 >= starting_sec && 30 <= ending_sec && 86400 >= ending_sec && starting_sec < ending_sec) {
             // Προσπερνάμε τους κόμβους που βασίζονται σε προηγούμενες χρονικές στιγμές
-            while (p->data[4] != starting_sec && p)
-                p = p->link;
+            do { p = p->link; } while (p->data[4] != starting_sec && p->link);
 
             int difference_sec = ending_sec - starting_sec; // Χρονική διαφορά σε δευτερόλεπτα
             int numberNeeded = difference_sec / 30; // Οι επιθυμητοί κόμβοι
@@ -115,13 +116,15 @@ public:
                         user_count = 1;
                         return user_count;
                     }
-                } else
+                }
+                else
                     counter = 0;
 
                 p = p->link;
                 numberNeeded--;
             }
-        } else
+        }
+        else
             cout << "Μη έγκυρο input!" << endl;
 
         return user_count;
@@ -150,7 +153,8 @@ public:
                 int x = RandomInt();
                 int y = RandomInt();
                 InsertBetween(counter + 1, x, y, day);
-            } else {
+            }
+            else {
                 p = p->link;
                 counter++;
             }
@@ -172,11 +176,13 @@ public:
            αν ανήκουν στην ίδια μέρα και οι συντεταγμένες (x,y) απέχουν το πολύ R,
            διαγράφουμε τον 2ο. Αλλιώς, συνεχίζουμε στο επόμενο ζεύγος κόμβων. */
         while (p->link) {
-            if (p->data[3] >= day - daysBefore && p->data[3] == p->link->data[3])
-                if (abs(p->data[0] - p->link->data[0]) < R && abs(p->data[1] - p->link->data[1]) < R)
+            if (p->data[3] >= day - daysBefore && p->data[3] == p->link->data[3]) {
+                if (abs(p->data[0] - p->link->data[0]) < R && abs(p->data[1] - p->link->data[1]) < R) {
                     p->link = p->link->link;
+                }
                 else
                     p = p->link;
+            }
             else
                 p = p->link;
         }
@@ -196,7 +202,8 @@ public:
         y->data[0] = currX;
         y->data[1] = currY;
         y->data[2] = healthy;
-        y->data[3] = 1; // Ο πρώτος κόμβος κάθε αλυσίδας βασίζεται πάντα στην πρώτη ημέρα
+        // Ο πρώτος κόμβος κάθε αλυσίδας βασίζεται πάντα στην πρώτη ημέρα
+        y->data[3] = 1;
         y->data[4] = 30;
 
         first = y; // Ορίζουμε τον κόμβο ως πρώτο
@@ -292,7 +299,8 @@ public:
         if (k == 1) {
             first = first->link;
             first->data[4] = 30;
-        } else { // Αλλιώς, κάνουμε όλες τις απαραίτητες μετατροπές, πριν διαγράψουμε τον κόμβο
+        }
+        else { // Αλλιώς, κάνουμε όλες τις απαραίτητες μετατροπές, πριν διαγράψουμε τον κόμβο
             ChainNode<T>* q = first;
 
             for (int i = 1; i < k - 1 && q; i++)
